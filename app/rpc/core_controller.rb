@@ -69,28 +69,67 @@ class CoreController < ::Gruf::Controllers::Base
 
   private
 
-  def traverse(descriptor)
-      message = descriptor.msgclass.new
+  def traverse(descriptor, depth=0)
+    message = descriptor.msgclass.new
+    return message if depth > 10 # this stops infinite loops
+    oneof = []
+    descriptor.each_oneof { |one| oneof << one }
+    if oneof.any?
+      add_field_to_message(message, descriptor.entries.sample, depth)
+    else
       descriptor.each do |field|
-        begin
-        message[field.name] = case field.label
-        when :repeated
-          (1..Faker::Number.between(1, 10)).map do
-            fake_value(field)
-          end
-        else
-          fake_value(field)
-        end
-        rescue TypeError
-        end
+        add_field_to_message(message, field, depth)
       end
-      message
+    end
+    message
   end
 
-  def fake_value(field)
+  def add_field_to_message(message, field, depth)
+    begin
+      value = find_value(field, depth)
+      if value.is_a?(Google::Protobuf::RepeatedField)
+        value.each do |val|
+          if val.respond_to?(:key)
+            message[field.name][val.key] = val.value
+          else
+            message[field.name].push(val)
+          end
+        end
+      else
+        message[field.name] = find_value(field, depth)
+      end
+    rescue => error
+      binding.pry
+    end
+  end
+
+  def find_value(field, depth)
+    case field.label
+    when :repeated
+      if field.type == :message
+        array = Google::Protobuf::RepeatedField.new(field.type, field.subtype.msgclass, [])
+      elsif field.type == :enum
+        binding.pry
+      else
+        array = Google::Protobuf::RepeatedField.new(field.type)
+      end
+      Faker::Number.between(1, 10).times do
+        if field.type == :message
+          array << traverse(field.subtype, depth+1)
+        else
+          array << fake_value(field, depth)
+        end
+      end
+      array
+    else
+      fake_value(field, depth)
+    end
+  end
+
+  def fake_value(field, depth)
     case field.type
     when :message
-      traverse(field.subtype)
+      traverse(field.subtype, depth+1)
     when :enum
       field.subtype.enummodule.constants.sample
     when :string
