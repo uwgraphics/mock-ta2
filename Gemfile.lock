@@ -49,9 +49,12 @@ GEM
       msgpack (~> 1.0)
     builder (3.2.3)
     byebug (10.0.2)
+    coderay (1.1.2)
     concurrent-ruby (1.0.5)
     crass (1.0.4)
     erubi (1.7.1)
+    faker (1.8.7)
+      i18n (>= 0.7)
     faraday (0.15.1)
       multipart-post (>= 1.2, < 3)
     ffi (1.9.23)
@@ -109,6 +112,9 @@ GEM
     nokogiri (1.8.2)
       mini_portile2 (~> 2.3.0)
     os (0.9.6)
+    pry (0.11.3)
+      coderay (~> 1.1.0)
+      method_source (~> 0.9.0)
     public_suffix (3.0.2)
     puma (3.11.4)
     rack (2.0.5)
@@ -176,8 +182,10 @@ PLATFORMS
 DEPENDENCIES
   bootsnap (>= 1.1.0)
   byebug
+  faker
   gruf
   listen (>= 3.0.5, < 3.2)
+  pry
   puma (~> 3.11)
   rails (~> 5.2.0)
   spring
