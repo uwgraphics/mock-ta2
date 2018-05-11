@@ -1,24 +1,48 @@
-# README
+# TA2 Mock GRPC server
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+I made a Mock GPRC server based on the [TA2-TA3 API](https://gitlab.com/datadrivendiscovery/ta3ta2-api).
 
-Things you may want to cover:
+## OSX Dev Setup (From Scratch)
 
-* Ruby version
+### Install Homebrew
+```sh
+/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+```
+Note: if homebrew is already install, run `brew update`
 
-* System dependencies
+### Install rbenv and ruby-build
+```sh
+brew install rbenv ruby-build
+```
+Run `rbenv init` and follow instructions for updating your PATH
 
-* Configuration
+### Install Ruby 2.4.2 and set global ruby
+```sh
+rbenv install 2.4.2
+rbenv global 2.4.2
+rbenv version
+```
 
-* Database creation
+### Clone this repo
+```sh
+git clone git@github.com:uwgraphics/mock-ta2.git
+cd mock-ta2
+```
 
-* Database initialization
+### Install Bundler and Bundle
+```sh
+gem install bundler
+bundle
+```
 
-* How to run the test suite
+### Start the server
 
-* Services (job queues, cache servers, search engines, etc.)
+```sh
+bundle exec gruf
+```
 
-* Deployment instructions
+## Notes
 
-* ...
+The port is set in `config/initializers/gruf.rb` if you need to change it.
+
+The magic happens in `app/rpc/core_controller.rb`. 
